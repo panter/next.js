@@ -28,6 +28,7 @@ const {
     query,
     buildId,
     assetPrefix,
+    basePath,
     runtimeConfig
   },
   location
@@ -99,7 +100,8 @@ export default async ({
     App,
     Component,
     ErrorComponent,
-    err: initialErr
+    err: initialErr,
+    basePath
   })
 
   router.subscribe(({ App, Component, props, hash, err }) => {

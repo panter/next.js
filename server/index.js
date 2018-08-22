@@ -34,7 +34,9 @@ export default class Server {
 
     // Only serverRuntimeConfig needs the default
     // publicRuntimeConfig gets it's default in client/index.js
-    const {serverRuntimeConfig = {}, publicRuntimeConfig, assetPrefix, generateEtags} = this.nextConfig
+    const {serverRuntimeConfig = {}, publicRuntimeConfig, host = '', basePath = '', generateEtags} = this.nextConfig
+
+    const assetPrefix = host + basePath
 
     if (!dev && !fs.existsSync(resolve(this.distDir, BUILD_ID_FILE))) {
       console.error(`> Could not find a valid build in the '${this.distDir}' directory! Try building your app with 'next build' before starting the server.`)
@@ -48,7 +50,8 @@ export default class Server {
       distDir: this.distDir,
       hotReloader: this.hotReloader,
       buildId: this.buildId,
-      generateEtags
+      generateEtags,
+      basePath
     }
 
     // Only the `publicRuntimeConfig` key is exposed to the client side
@@ -214,6 +217,11 @@ export default class Server {
   }
 
   async run (req, res, parsedUrl) {
+    const { basePath } = this.nextConfig
+    parsedUrl.pathname = parsedUrl.pathname.replace(basePath, '')
+    if (parsedUrl.pathname === '') {
+      parsedUrl.pathname = '/'
+    }
     if (this.hotReloader) {
       const {finished} = await this.hotReloader.run(req, res, parsedUrl)
       if (finished) {

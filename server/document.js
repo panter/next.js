@@ -44,11 +44,11 @@ export class Head extends Component {
   }
 
   getCssLinks () {
-    const { assetPrefix, files } = this.context._documentProps
+    const { assetPrefix, basePath, files } = this.context._documentProps
     if(!files || files.length === 0) {
       return null
     }
-  
+
     return files.map((file) => {
       // Only render .css files here
       if(!/\.css$/.exec(file)) {
@@ -59,18 +59,18 @@ export class Head extends Component {
         key={file}
         nonce={this.props.nonce}
         rel='stylesheet'
-        href={`${assetPrefix}/_next/${file}`}
+        href={`${assetPrefix || basePath}/_next/${file}`}
       />
     })
   }
 
   getPreloadDynamicChunks () {
-    const { dynamicImports, assetPrefix } = this.context._documentProps
+    const { dynamicImports, assetPrefix, basePath } = this.context._documentProps
     return dynamicImports.map((bundle) => {
       return <script
         async
         key={bundle.file}
-        src={`${assetPrefix}/_next/${bundle.file}`}
+        src={`${assetPrefix || basePath}/_next/${bundle.file}`}
         as='script'
         nonce={this.props.nonce}
       />
@@ -78,11 +78,11 @@ export class Head extends Component {
   }
 
   getPreloadMainLinks () {
-    const { assetPrefix, files } = this.context._documentProps
+    const { assetPrefix, basePath, files } = this.context._documentProps
     if(!files || files.length === 0) {
       return null
     }
-  
+
     return files.map((file) => {
       // Only render .js files here
       if(!/\.js$/.exec(file)) {
@@ -93,22 +93,22 @@ export class Head extends Component {
         key={file}
         nonce={this.props.nonce}
         rel='preload'
-        href={`${assetPrefix}/_next/${file}`}
+        href={`${assetPrefix || basePath}/_next/${file}`}
         as='script'
       />
     })
   }
 
   render () {
-    const { head, styles, assetPrefix, __NEXT_DATA__ } = this.context._documentProps
+    const { head, styles, assetPrefix, basePath, __NEXT_DATA__ } = this.context._documentProps
     const { page, pathname, buildId } = __NEXT_DATA__
     const pagePathname = getPagePathname(pathname)
 
     return <head {...this.props}>
       {(head || []).map((h, i) => React.cloneElement(h, { key: h.key || i }))}
-      {page !== '/_error' && <link rel='preload' href={`${assetPrefix}/_next/static/${buildId}/pages${pagePathname}`} as='script' nonce={this.props.nonce} />}
-      <link rel='preload' href={`${assetPrefix}/_next/static/${buildId}/pages/_app.js`} as='script' nonce={this.props.nonce} />
-      <link rel='preload' href={`${assetPrefix}/_next/static/${buildId}/pages/_error.js`} as='script' nonce={this.props.nonce} />
+      {page !== '/_error' && <link rel='preload' href={`${assetPrefix || basePath}/_next/static/${buildId}/pages${pagePathname}`} as='script' nonce={this.props.nonce} />}
+      <link rel='preload' href={`${assetPrefix || basePath}/_next/static/${buildId}/pages/_app.js`} as='script' nonce={this.props.nonce} />
+      <link rel='preload' href={`${assetPrefix || basePath}/_next/static/${buildId}/pages/_error.js`} as='script' nonce={this.props.nonce} />
       {this.getPreloadDynamicChunks()}
       {this.getPreloadMainLinks()}
       {this.getCssLinks()}
@@ -144,23 +144,23 @@ export class NextScript extends Component {
   }
 
   getDynamicChunks () {
-    const { dynamicImports, assetPrefix } = this.context._documentProps
+    const { dynamicImports, assetPrefix, basePath } = this.context._documentProps
     return dynamicImports.map((bundle) => {
       return <script
         async
         key={bundle.file}
-        src={`${assetPrefix}/_next/${bundle.file}`}
+        src={`${assetPrefix || basePath}/_next/${bundle.file}`}
             nonce={this.props.nonce}
       />
     })
   }
 
   getScripts () {
-    const { assetPrefix, files } = this.context._documentProps
+    const { assetPrefix, basePath, files } = this.context._documentProps
     if(!files || files.length === 0) {
       return null
     }
-  
+
     return files.map((file) => {
       // Only render .js files here
       if(!/\.js$/.exec(file)) {
@@ -169,7 +169,7 @@ export class NextScript extends Component {
 
       return <script
         key={file}
-        src={`${assetPrefix}/_next/${file}`}
+        src={`${assetPrefix || basePath}/_next/${file}`}
         nonce={this.props.nonce}
         async
       />
@@ -199,18 +199,18 @@ export class NextScript extends Component {
   }
 
   render () {
-    const { staticMarkup, assetPrefix, devFiles, __NEXT_DATA__ } = this.context._documentProps
+    const { staticMarkup, assetPrefix, basePath, devFiles, __NEXT_DATA__ } = this.context._documentProps
     const { page, pathname, buildId } = __NEXT_DATA__
     const pagePathname = getPagePathname(pathname)
 
     return <Fragment>
-      {devFiles ? devFiles.map((file) => <script key={file} src={`${assetPrefix}/_next/${file}`} nonce={this.props.nonce} />) : null}
+      {devFiles ? devFiles.map((file) => <script key={file} src={`${assetPrefix || basePath}/_next/${file}`} nonce={this.props.nonce} />) : null}
       {staticMarkup ? null : <script nonce={this.props.nonce} dangerouslySetInnerHTML={{
         __html: NextScript.getInlineScriptSource(this.context._documentProps)
       }} />}
-      {page !== '/_error' && <script async id={`__NEXT_PAGE__${pathname}`} src={`${assetPrefix}/_next/static/${buildId}/pages${pagePathname}`} nonce={this.props.nonce} />}
-      <script async id={`__NEXT_PAGE__/_app`} src={`${assetPrefix}/_next/static/${buildId}/pages/_app.js`} nonce={this.props.nonce} />
-      <script async id={`__NEXT_PAGE__/_error`} src={`${assetPrefix}/_next/static/${buildId}/pages/_error.js`} nonce={this.props.nonce} />
+      {page !== '/_error' && <script async id={`__NEXT_PAGE__${pathname}`} src={`${assetPrefix || basePath}/_next/static/${buildId}/pages${pagePathname}`} nonce={this.props.nonce} />}
+      <script async id={`__NEXT_PAGE__/_app`} src={`${assetPrefix || basePath}/_next/static/${buildId}/pages/_app.js`} nonce={this.props.nonce} />
+      <script async id={`__NEXT_PAGE__/_error`} src={`${assetPrefix || basePath}/_next/static/${buildId}/pages/_error.js`} nonce={this.props.nonce} />
       {staticMarkup ? null : this.getDynamicChunks()}
       {staticMarkup ? null : this.getScripts()}
     </Fragment>

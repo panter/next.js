@@ -48,7 +48,8 @@ export default class Server {
       distDir: this.distDir,
       hotReloader: this.hotReloader,
       buildId: this.buildId,
-      generateEtags
+      generateEtags,
+      basePath: this.nextConfig.basePath,
     }
 
     // Only the `publicRuntimeConfig` key is exposed to the client side
@@ -214,6 +215,11 @@ export default class Server {
   }
 
   async run (req, res, parsedUrl) {
+    const { basePath } = this.nextConfig
+    parsedUrl.pathname = parsedUrl.pathname.replace(basePath, '')
+    if (parsedUrl.pathname === '') {
+      parsedUrl.pathname = '/'
+    }
     if (this.hotReloader) {
       const {finished} = await this.hotReloader.run(req, res, parsedUrl)
       if (finished) {

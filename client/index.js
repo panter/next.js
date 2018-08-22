@@ -28,12 +28,16 @@ const {
     query,
     buildId,
     assetPrefix,
-    runtimeConfig
+    basePath,
+    runtimeConfig,
   },
   location
 } = window
 
-const prefix = assetPrefix || ''
+
+console.log('Yupiii', basePath);
+
+const prefix = assetPrefix || '/account' || ''
 
 // With dynamic assetPrefix it's no longer possible to set assetPrefix at the build time
 // So, this is how we do it in the client side at runtime
@@ -48,7 +52,7 @@ envConfig.setConfig({
 
 const asPath = getURL()
 
-const pageLoader = new PageLoader(buildId, prefix)
+const pageLoader = new PageLoader(buildId, prefix, basePath)
 window.__NEXT_LOADED_PAGES__.forEach(({ route, fn }) => {
   pageLoader.registerPage(route, fn)
 })
@@ -99,7 +103,8 @@ export default async ({
     App,
     Component,
     ErrorComponent,
-    err: initialErr
+    err: initialErr,
+    basePath,
   })
 
   router.subscribe(({ App, Component, props, hash, err }) => {

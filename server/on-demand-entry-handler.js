@@ -214,7 +214,7 @@ export default function onDemandEntryHandler (devMiddleware, compilers, {
               res.end('302')
             })
         } else {
-          if (!/^\/_next\/on-demand-entries-ping/.test(req.url)) return next()
+          if (!/\/_next\/on-demand-entries-ping/.test(req.url)) return next()
 
           const { query } = parse(req.url, true)
           const page = normalizePage(query.page)

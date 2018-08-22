@@ -14,7 +14,7 @@ const {
   }
 } = window
 
-const prefix = assetPrefix || ''
+const prefix = assetPrefix || '/account' || ''
 const webpackHMR = initWebpackHMR({assetPrefix: prefix})
 
 window.next = next

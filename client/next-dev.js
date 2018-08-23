@@ -10,7 +10,8 @@ import('./noop')
 
 const {
   __NEXT_DATA__: {
-    assetPrefix
+    assetPrefix,
+    basePath
   }
 } = window
 
@@ -20,7 +21,7 @@ const webpackHMR = initWebpackHMR({assetPrefix: prefix})
 window.next = next
 initNext({ webpackHMR })
   .then((emitter) => {
-    initOnDemandEntries({assetPrefix: prefix})
+    initOnDemandEntries({assetPrefix: prefix, basePath})
 
     let lastScroll
 

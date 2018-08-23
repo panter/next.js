@@ -1,6 +1,6 @@
 /* global location */
 
-import Router from '../lib/router'
+import Router, { removeBasePath } from '../lib/router'
 import fetch from 'unfetch'
 
 export default ({assetPrefix, basePath}) => {
@@ -10,11 +10,7 @@ export default ({assetPrefix, basePath}) => {
 
   async function ping () {
     try {
-      let pathname = Router.pathname.replace(basePath, '')
-      pathname = pathname.replace(this.basePath, '')
-      if ( pathname === '') {
-        pathname = '/'
-      }
+      const pathname = removeBasePath(Router.pathname, basePath)
       const url = `${assetPrefix || ''}/_next/on-demand-entries-ping?page=${pathname}`
       const res = await fetch(url, {
         credentials: 'omit'

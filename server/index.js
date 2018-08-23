@@ -17,6 +17,7 @@ import {PHASE_PRODUCTION_SERVER, PHASE_DEVELOPMENT_SERVER, BLOCKED_PAGES, BUILD_
 import * as asset from '../lib/asset'
 import * as envConfig from '../lib/runtime-config'
 import { isResSent } from '../lib/utils'
+import { removeBasePath } from '../lib/router'
 
 // We need to go up one more level since we are in the `dist` directory
 import pkg from '../../package'
@@ -218,10 +219,7 @@ export default class Server {
 
   async run (req, res, parsedUrl) {
     const { basePath } = this.nextConfig
-    parsedUrl.pathname = parsedUrl.pathname.replace(basePath, '')
-    if (parsedUrl.pathname === '') {
-      parsedUrl.pathname = '/'
-    }
+    parsedUrl.pathname = removeBasePath(parsedUrl.pathname, basePath)
     if (this.hotReloader) {
       const {finished} = await this.hotReloader.run(req, res, parsedUrl)
       if (finished) {

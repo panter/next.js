@@ -16,9 +16,9 @@ export default class MyApp extends App {
   render () {
     const {Component, pageProps} = this.props
     return <Container>
-        <Link href="/account"><a>index</a></Link>
+        <Link href="/"><a>index</a></Link>
         <br />
-        <Link href="/account/password"><a>password</a></Link>
+        <Link href="/password"><a>password</a></Link>
       <Component {...pageProps} />
     </Container>
   }

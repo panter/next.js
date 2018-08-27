@@ -1,13 +1,11 @@
 
-/* Without CSS Modules, maybe with PostCSS */
+import 'bootstrap/dist/css/bootstrap.css'
 
-import '../style.css'
-
-export default () => <div className='example'>O Hai world!</div>
-
-/* With CSS Modules */
-/*
-import css from "../style.css"
-
-export default () => <div className={css.example}>Hello World, I am being styled using CSS Modules!</div>
-*/
+export default () => (
+  <div className='example'>
+    <div>O Hai world!</div>
+    <button type='button' className='btn btn-primary'>
+      Primary
+    </button>
+  </div>
+)

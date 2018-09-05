@@ -62,7 +62,7 @@ const handlers = {
 
 export default ({assetPrefix}) => {
   const options = {
-    path: `${assetPrefix}/_next/webpack-hmr`
+    path: `${assetPrefix || '/account'}/_next/webpack-hmr`
   }
 
   const devClient = connect(options)

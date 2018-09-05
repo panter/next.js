@@ -11,6 +11,7 @@ export default class Router {
     const routes = this.routes.get(method) || new Set()
     routes.add({ match: route(path), fn })
     this.routes.set(method, routes)
+    console.log('adding route', path)
   }
 
   match (req, res, parsedUrl) {

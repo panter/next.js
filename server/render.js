@@ -66,7 +66,8 @@ async function doRender (req, res, pathname, query, {
   dir,
   dev = false,
   staticMarkup = false,
-  nextExport
+  nextExport,
+  basePath,
 } = {}) {
   page = page || pathname
 
@@ -172,6 +173,7 @@ async function doRender (req, res, pathname, query, {
       query, // querystring parsed / passed by the user
       buildId, // buildId is used to facilitate caching of page bundles, we send it to the client so that pageloader knows where to load bundles
       assetPrefix: assetPrefix === '' ? undefined : assetPrefix, // send assetPrefix to the client side when configured, otherwise don't sent in the resulting HTML
+      basePath: basePath === '' ? undefined : basePath,
       runtimeConfig, // runtimeConfig if provided, otherwise don't sent in the resulting HTML
       nextExport, // If this is a page exported by `next export`
       err: (err) ? serializeError(dev, err) : undefined // Error if one happened, otherwise don't sent in the resulting HTML
@@ -184,7 +186,8 @@ async function doRender (req, res, pathname, query, {
     files,
     dynamicImports,
     assetPrefix, // We always pass assetPrefix as a top level property since _document needs it to render, even though the client side might not need it
-    ...docProps
+    basePath,
+    ...docProps,
   }} />
 
   return '<!DOCTYPE html>' + renderToStaticMarkup(doc)

@@ -633,6 +633,28 @@ export default (context, render) => {
           browser.close()
         })
       })
+
+      describe('with next/link', () => {
+        it('should use pushState with same href and different asPath', async () => {
+          let browser
+          try {
+            browser = await webdriver(context.appPort, '/nav/as-path-pushstate')
+            await browser.elementByCss('#hello').click().waitForElementByCss('#something-hello')
+            const queryOne = JSON.parse(await browser.elementByCss('#router-query').text())
+            expect(queryOne.something).toBe('hello')
+            await browser.elementByCss('#same-query').click().waitForElementByCss('#something-same-query')
+            const queryTwo = JSON.parse(await browser.elementByCss('#router-query').text())
+            expect(queryTwo.something).toBe('hello')
+            await browser.back().waitForElementByCss('#something-hello')
+            const queryThree = JSON.parse(await browser.elementByCss('#router-query').text())
+            expect(queryThree.something).toBe('hello')
+          } finally {
+            if (browser) {
+              browser.close()
+            }
+          }
+        })
+      })
     })
 
     describe('runtime errors', () => {
@@ -690,6 +712,24 @@ export default (context, render) => {
           expect(src.includes('/non-existent')).toBeFalsy()
         }
         browser.close()
+      })
+    })
+
+    describe('updating head while client routing', () => {
+      it('should update head during client routing', async () => {
+        let browser
+        try {
+          browser = await webdriver(context.appPort, '/nav/head-1')
+          expect(await browser.elementByCss('meta[name="description"]').getAttribute('content')).toBe('Head One')
+          await browser.elementByCss('#to-head-2').click().waitForElementByCss('#head-2')
+          expect(await browser.elementByCss('meta[name="description"]').getAttribute('content')).toBe('Head Two')
+          await browser.elementByCss('#to-head-1').click().waitForElementByCss('#head-1')
+          expect(await browser.elementByCss('meta[name="description"]').getAttribute('content')).toBe('Head One')
+        } finally {
+          if (browser) {
+            browser.close()
+          }
+        }
       })
     })
   })

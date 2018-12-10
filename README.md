@@ -12,6 +12,10 @@ Next.js is a minimalistic framework for server-rendered React applications.
 
 ---
 
+**The below readme is the documentation for the `canary` (prerelease) branch. To view the documentation for the latest stable Next.js version visit [nextjs.org/docs](https://nextjs.org/docs)**
+
+---
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 <!-- https://github.com/thlorenz/doctoc -->
@@ -127,10 +131,11 @@ Every `import` you declare gets bundled and served with each page. That means pa
 ```jsx
 import cowsay from 'cowsay-browser'
 
-export default () =>
+export default () => (
   <pre>
     {cowsay.say({ text: 'hi there!' })}
   </pre>
+)
 ```
 
 ### CSS
@@ -145,7 +150,7 @@ export default () =>
 We bundle [styled-jsx](https://github.com/zeit/styled-jsx) to provide support for isolated scoped CSS. The aim is to support "shadow CSS" similar to Web Components, which unfortunately [do not support server-rendering and are JS-only](https://github.com/w3c/webcomponents/issues/71).
 
 ```jsx
-export default () =>
+export default () => (
   <div>
     Hello world
     <p>scoped!</p>
@@ -168,6 +173,7 @@ export default () =>
       }
     `}</style>
   </div>
+)
 ```
 
 Please see the [styled-jsx documentation](https://www.npmjs.com/package/styled-jsx) for more examples.
@@ -223,7 +229,7 @@ We expose a built-in component for appending elements to the `<head>` of the pag
 ```jsx
 import Head from 'next/head'
 
-export default () =>
+export default () => (
   <div>
     <Head>
       <title>My page title</title>
@@ -231,12 +237,14 @@ export default () =>
     </Head>
     <p>Hello world!</p>
   </div>
+)
 ```
 
 To avoid duplicate tags in your `<head>` you can use the `key` property, which will make sure the tag is only rendered once:
 
 ```jsx
 import Head from 'next/head'
+
 export default () => (
   <div>
     <Head>
@@ -342,7 +350,7 @@ Client-side transitions between routes can be enabled via a `<Link>` component. 
 // pages/index.js
 import Link from 'next/link'
 
-export default () =>
+export default () => (
   <div>
     Click{' '}
     <Link href="/about">
@@ -350,6 +358,7 @@ export default () =>
     </Link>{' '}
     to read more
   </div>
+)
 ```
 
 ```jsx
@@ -382,7 +391,7 @@ The component `<Link>` can also receive an URL object and it will automatically 
 // pages/index.js
 import Link from 'next/link'
 
-export default () =>
+export default () => (
   <div>
     Click{' '}
     <Link href={{ pathname: '/about', query: { name: 'Zeit' } }}>
@@ -390,6 +399,7 @@ export default () =>
     </Link>{' '}
     to read more
   </div>
+)
 ```
 
 That will generate the URL string `/about?name=Zeit`, you can use every property as defined in the [Node.js URL module documentation](https://nodejs.org/api/url.html#url_url_strings_and_url_objects).
@@ -402,7 +412,7 @@ The default behaviour for the `<Link>` component is to `push` a new url into the
 // pages/index.js
 import Link from 'next/link'
 
-export default () =>
+export default () => (
   <div>
     Click{' '}
     <Link href="/about" replace>
@@ -410,6 +420,7 @@ export default () =>
     </Link>{' '}
     to read more
   </div>
+)
 ```
 
 ##### Using a component that supports `onClick`
@@ -420,13 +431,14 @@ export default () =>
 // pages/index.js
 import Link from 'next/link'
 
-export default () =>
+export default () => (
   <div>
     Click{' '}
     <Link href="/about">
       <img src="/static/image.png" alt="image" />
     </Link>
   </div>
+)
 ```
 
 ##### Forcing the Link to expose `href` to its child
@@ -439,12 +451,13 @@ If child is an `<a>` tag and doesn't have a href attribute we specify it so that
 import Link from 'next/link'
 import Unexpected_A from 'third-library'
 
-export default ({ href, name }) =>
+export default ({ href, name }) => (
   <Link href={href} passHref>
     <Unexpected_A>
       {name}
     </Unexpected_A>
   </Link>
+)
 ```
 
 ##### Disabling the scroll changes to top on page
@@ -471,10 +484,11 @@ You can also do client-side page transitions using the `next/router`
 ```jsx
 import Router from 'next/router'
 
-export default () =>
+export default () => (
   <div>
     Click <span onClick={() => Router.push('/about')}>here</span> to read more
   </div>
+)
 ```
 
 #### Intercepting `popstate`
@@ -520,16 +534,18 @@ You can use an URL object the same way you use it in a `<Link>` component to `pu
 ```jsx
 import Router from 'next/router'
 
-const handler = () =>
+const handler = () => {
   Router.push({
     pathname: '/about',
     query: { name: 'Zeit' }
   })
+}
 
-export default () =>
+export default () => (
   <div>
     Click <span onClick={handler}>here</span> to read more
   </div>
+)
 ```
 
 This uses the same exact parameters as in the `<Link>` component.
@@ -676,7 +692,7 @@ You can add `prefetch` prop to any `<Link>` and Next.js will prefetch those page
 import Link from 'next/link'
 
 // example header component
-export default () =>
+export default () => (
   <nav>
     <ul>
       <li>
@@ -696,6 +712,7 @@ export default () =>
       </li>
     </ul>
   </nav>
+)
 ```
 
 #### Imperatively
@@ -705,7 +722,7 @@ Most prefetching needs are addressed by `<Link />`, but we also expose an impera
 ```jsx
 import { withRouter } from 'next/router'
 
-export default withRouter(({ router }) =>
+export default withRouter(({ router }) => (
   <div>
     <a onClick={() => setTimeout(() => router.push('/dynamic'), 100)}>
       A route transition will happen after 100ms
@@ -730,6 +747,7 @@ class MyLink extends React.Component {
   
   render() {
     const { router } = this.props
+    
     return (
        <div>
         <a onClick={() => setTimeout(() => router.push('/dynamic'), 100)}>
@@ -898,14 +916,15 @@ Here are a few ways to use dynamic imports.
 ```jsx
 import dynamic from 'next/dynamic'
 
-const DynamicComponent = dynamic(import('../components/hello'))
+const DynamicComponent = dynamic(() => import('../components/hello'))
 
-export default () =>
+export default () => (
   <div>
     <Header />
     <DynamicComponent />
     <p>HOME PAGE is here!</p>
   </div>
+)
 ```
 
 #### 2. With Custom Loading Component
@@ -913,19 +932,17 @@ export default () =>
 ```jsx
 import dynamic from 'next/dynamic'
 
-const DynamicComponentWithCustomLoading = dynamic(
-  import('../components/hello2'),
-  {
-    loading: () => <p>...</p>
-  }
-)
+const DynamicComponentWithCustomLoading = dynamic(() => import('../components/hello2'), {
+  loading: () => <p>...</p>
+})
 
-export default () =>
+export default () => (
   <div>
     <Header />
     <DynamicComponentWithCustomLoading />
     <p>HOME PAGE is here!</p>
   </div>
+)
 ```
 
 #### 3. With No SSR
@@ -933,16 +950,17 @@ export default () =>
 ```jsx
 import dynamic from 'next/dynamic'
 
-const DynamicComponentWithNoSSR = dynamic(import('../components/hello3'), {
+const DynamicComponentWithNoSSR = dynamic(() => import('../components/hello3'), {
   ssr: false
 })
 
-export default () =>
+export default () => (
   <div>
     <Header />
     <DynamicComponentWithNoSSR />
     <p>HOME PAGE is here!</p>
   </div>
+)
 ```
 
 #### 4. With Multiple Modules At Once
@@ -953,8 +971,8 @@ import dynamic from 'next/dynamic'
 const HelloBundle = dynamic({
   modules: () => {
     const components = {
-      Hello1: import('../components/hello1'),
-      Hello2: import('../components/hello2')
+      Hello1: () => import('../components/hello1'),
+      Hello2: () => import('../components/hello2')
     }
 
     return components
@@ -990,25 +1008,28 @@ Next.js uses the `App` component to initialize pages. You can override it and co
 To override, create the `./pages/_app.js` file and override the App class as shown below:
 
 ```js
-import App, {Container} from 'next/app'
 import React from 'react'
+import App, { Container } from 'next/app'
 
 export default class MyApp extends App {
-  static async getInitialProps ({ Component, router, ctx }) {
+  static async getInitialProps({ Component, router, ctx }) {
     let pageProps = {}
 
     if (Component.getInitialProps) {
       pageProps = await Component.getInitialProps(ctx)
     }
 
-    return {pageProps}
+    return { pageProps }
   }
 
   render () {
-    const {Component, pageProps} = this.props
-    return <Container>
-      <Component {...pageProps} />
-    </Container>
+    const { Component, pageProps } = this.props
+
+    return (
+      <Container>
+        <Component {...pageProps} />
+      </Container>
+    )
   }
 }
 ```
@@ -1475,7 +1496,7 @@ next build
 next export
 ```
 
-By default `next export` doesn't require any configuration. It will generate a default `exportPathMap` containing the routes to pages inside the `pages` directory. 
+By default `next export` doesn't require any configuration. It will generate a default `exportPathMap` containing the routes to pages inside the `pages` directory. This default mapping is available as `defaultPathMap` in the example below. 
 
 If your application has dynamic routes you can add a dynamic `exportPathMap` in `next.config.js`.
 This function is asynchronous and gets the default `exportPathMap` as a parameter.
@@ -1532,6 +1553,36 @@ For an example, simply visit the `out` directory and run following command to de
 
 ```sh
 now
+```
+
+### Copying custom files
+
+In case you have to copy custom files like a robots.txt or generate a sitemap.xml you can do this inside of `exportPathMap`.
+`exportPathMap` gets a few contextual parameter to aid you with creating/copying files: 
+
+- `dev` - `true` when `exportPathMap` is being called in development. `false` when running `next export`. In development `exportPathMap` is used to define routes and behavior like copying files is not required.
+- `dir` - Absolute path to the project directory
+- `outDir` - Absolute path to the `out` directory (configurable with `-o` or `--outdir`). When `dev` is `true` the value of `outDir` will be `null`.
+- `distDir` - Absolute path to the `.next` directory (configurable using the `distDir` config key)
+- `buildId` - The buildId the export is running for
+
+```js
+// next.config.js
+const fs = require('fs')
+const { join } = require('path')
+const { promisify } = require('util')
+const copyFile = promisify(fs.copyFile)
+
+module.exports = {
+  exportPathMap: async function (defaultPathMap, {dev, dir, outDir, distDir, buildId}) {
+    if (dev) {
+      return defaultPathMap
+    }
+    // This will copy robots.txt from your project root into the out directory
+    await copyFile(join(dir, 'robots.txt'), join(outDir, 'robots.txt'))
+    return defaultPathMap
+  }
+}
 ```
 
 ### Limitation

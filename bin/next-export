@@ -2,8 +2,8 @@
 import { resolve, join } from 'path'
 import { existsSync } from 'fs'
 import parseArgs from 'minimist'
-import exportApp from '../server/export'
-import { printAndExit } from '../lib/utils'
+import exportApp from '../export'
+import { printAndExit } from '../server/lib/utils'
 
 const argv = parseArgs(process.argv.slice(2), {
   alias: {

@@ -7,7 +7,7 @@ import {PAGES_MANIFEST, ROUTE_NAME_REGEX} from '../../../lib/constants'
 // It's also used by next export to provide defaultPathMap
 export default class PagesManifestPlugin {
   apply (compiler: any) {
-    compiler.hooks.emit.tapAsync('NextJsPagesManifest', (compilation, callback) => {
+    compiler.hooks.emit.tap('NextJsPagesManifest', (compilation) => {
       const {entries} = compilation
       const pages = {}
 
@@ -24,7 +24,8 @@ export default class PagesManifestPlugin {
         }
 
         const {name} = entry
-        pages[`/${pagePath.replace(/\\/g, '/')}`] = name
+        // Write filename, replace any backslashes in path (on windows) with forwardslashes for cross-platform consistency.
+        pages[`/${pagePath.replace(/\\/g, '/')}`] = name.replace(/\\/g, '/')
       }
 
       if (typeof pages['/index'] !== 'undefined') {
@@ -32,7 +33,6 @@ export default class PagesManifestPlugin {
       }
 
       compilation.assets[PAGES_MANIFEST] = new RawSource(JSON.stringify(pages))
-      callback()
     })
   }
 }

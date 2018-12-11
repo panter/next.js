@@ -14,9 +14,9 @@ export default class Document extends Component {
   }
 
   static getInitialProps ({ renderPage }) {
-    const { html, head, errorHtml, buildManifest } = renderPage()
+    const { html, head, buildManifest } = renderPage()
     const styles = flush()
-    return { html, head, errorHtml, styles, buildManifest }
+    return { html, head, styles, buildManifest }
   }
 
   getChildContext () {
@@ -70,7 +70,7 @@ export class Head extends Component {
       return <link
         rel='preload'
         key={bundle.file}
-        src={`${assetPrefix}/_next/${bundle.file}`}
+        href={`${assetPrefix}/_next/${bundle.file}`}
         as='script'
         nonce={this.props.nonce}
       />
@@ -101,11 +101,22 @@ export class Head extends Component {
 
   render () {
     const { head, styles, assetPrefix, __NEXT_DATA__ } = this.context._documentProps
-    const { page, pathname, buildId } = __NEXT_DATA__
-    const pagePathname = getPagePathname(pathname)
+    const { page, buildId } = __NEXT_DATA__
+    const pagePathname = getPagePathname(page)
+
+    let children = this.props.children
+    // show a warning if Head contains <title> (only in development)
+    if (process.env.NODE_ENV !== 'production') {
+      children = React.Children.map(children, (child) => {
+        if (child && child.type === 'title') {
+          console.warn("Warning: <title> should not be used in _document.js's <Head>. https://err.sh/next.js/no-document-title")
+        }
+        return child
+      })
+    }
 
     return <head {...this.props}>
-      {(head || []).map((h, i) => React.cloneElement(h, { key: h.key || i }))}
+      {head}
       {page !== '/_error' && <link rel='preload' href={`${assetPrefix}/_next/static/${buildId}/pages${pagePathname}`} as='script' nonce={this.props.nonce} />}
       <link rel='preload' href={`${assetPrefix}/_next/static/${buildId}/pages/_app.js`} as='script' nonce={this.props.nonce} />
       <link rel='preload' href={`${assetPrefix}/_next/static/${buildId}/pages/_error.js`} as='script' nonce={this.props.nonce} />
@@ -113,7 +124,7 @@ export class Head extends Component {
       {this.getPreloadMainLinks()}
       {this.getCssLinks()}
       {styles || null}
-      {this.props.children}
+      {children}
     </head>
   }
 }
@@ -124,12 +135,9 @@ export class Main extends Component {
   }
 
   render () {
-    const { html, errorHtml } = this.context._documentProps
+    const { html } = this.context._documentProps
     return (
-      <Fragment>
-        <div id='__next' dangerouslySetInnerHTML={{ __html: html }} />
-        <div id='__next-error' dangerouslySetInnerHTML={{ __html: errorHtml }} />
-      </Fragment>
+      <div id='__next' dangerouslySetInnerHTML={{ __html: html }} />
     )
   }
 }
@@ -178,37 +186,21 @@ export class NextScript extends Component {
 
   static getInlineScriptSource (documentProps) {
     const { __NEXT_DATA__ } = documentProps
-    const { page, pathname } = __NEXT_DATA__
-
-    return `
-      __NEXT_DATA__ = ${htmlescape(__NEXT_DATA__)}
-      module={}
-      __NEXT_LOADED_PAGES__ = []
-
-      __NEXT_REGISTER_PAGE = function (route, fn) {
-        __NEXT_LOADED_PAGES__.push({ route: route, fn: fn })
-      }${page === '_error' ? `
-
-      __NEXT_REGISTER_PAGE(${htmlescape(pathname)}, function() {
-        var error = new Error('Page does not exist: ${htmlescape(pathname)}')
-        error.statusCode = 404
-
-        return { error: error }
-      })`: ''}
-    `
+    const { page } = __NEXT_DATA__
+    return `__NEXT_DATA__ = ${htmlescape(__NEXT_DATA__)};__NEXT_LOADED_PAGES__=[];__NEXT_REGISTER_PAGE=function(r,f){__NEXT_LOADED_PAGES__.push([r, f])}`
   }
 
   render () {
     const { staticMarkup, assetPrefix, devFiles, __NEXT_DATA__ } = this.context._documentProps
-    const { page, pathname, buildId } = __NEXT_DATA__
-    const pagePathname = getPagePathname(pathname)
+    const { page, buildId } = __NEXT_DATA__
+    const pagePathname = getPagePathname(page)
 
     return <Fragment>
       {devFiles ? devFiles.map((file) => <script key={file} src={`${assetPrefix}/_next/${file}`} nonce={this.props.nonce} />) : null}
       {staticMarkup ? null : <script nonce={this.props.nonce} dangerouslySetInnerHTML={{
         __html: NextScript.getInlineScriptSource(this.context._documentProps)
       }} />}
-      {page !== '/_error' && <script async id={`__NEXT_PAGE__${pathname}`} src={`${assetPrefix}/_next/static/${buildId}/pages${pagePathname}`} nonce={this.props.nonce} />}
+      {page !== '/_error' && <script async id={`__NEXT_PAGE__${page}`} src={`${assetPrefix}/_next/static/${buildId}/pages${pagePathname}`} nonce={this.props.nonce} />}
       <script async id={`__NEXT_PAGE__/_app`} src={`${assetPrefix}/_next/static/${buildId}/pages/_app.js`} nonce={this.props.nonce} />
       <script async id={`__NEXT_PAGE__/_error`} src={`${assetPrefix}/_next/static/${buildId}/pages/_error.js`} nonce={this.props.nonce} />
       {staticMarkup ? null : this.getDynamicChunks()}
@@ -217,10 +209,10 @@ export class NextScript extends Component {
   }
 }
 
-function getPagePathname (pathname) {
-  if (pathname === '/') {
+function getPagePathname (page) {
+  if (page === '/') {
     return '/index.js'
   }
 
-  return `${pathname}.js`
+  return `${page}.js`
 }
